@@ -25,6 +25,18 @@ class ConnectionInfo {
     }
 }
 
+class Choices {
+    id: number;
+    name: string;
+
+    constructor(id: number, name: string) {
+        this.id = id;
+        this.name = name;
+    }
+}
+
+var choices: any[] = [];
+
 // oh heeyyyooooo it's a root password in plain text on a public GitHub
 var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");
 
@@ -45,6 +57,10 @@ var disconnectFromDB = function(): void {
     console.log("disconnected from database.\n");
 }
 
+var pushToChoices = function(id: number, name: string): void {
+    choices.push(new Choices(id, name));
+}
+
 var drawTable = function(): void {
     connection.query("SELECT item_id, product_name, price FROM products", function(err, res) {
         if (err) throw err;
@@ -62,6 +78,7 @@ var drawTable = function(): void {
         
         // insert padding on the right-hand side for each entry
         for (var i: number = 0; i < res.length; i++) {
+            pushToChoices(res[i].item_id, res[i].product_name);
             res[i].item_id += generatePadding(idLength, res[i].item_id.toString().length);
             res[i].product_name += generatePadding(productLength, res[i].product_name.length);
             res[i].price += generatePadding(priceLength, res[i].price.toString().length);
@@ -83,8 +100,52 @@ var drawTable = function(): void {
             console.log(lineItem);
         }
         console.log(separator);
+        setTimeout(mainMenu, 200);
     })
 }
+
+var mainMenu = function(): void {
+    inquirer
+    .prompt([
+        {
+            type: "list",
+            message: "Which item would you like to purchase today?",
+            choices: choices,
+            name: "purchase"
+        }
+    ])
+    .then((response) => {
+        var id: number;
+        for (var i: number = 0; i < choices.length; i++) {
+            if (response.purchase === choices[i].name) {
+                id = choices[i].id;
+                break;
+            }
+        }
+        quantityMenu(response.purchase, id);
+    })
+}
+
+var quantityMenu = function(item: string, input: number): void {
+    function checkForNum(input: any): boolean | string {
+        if (/^[0-9]/.test(input)) {
+            return true;
+        }
+        else {return "Please enter a number."}
+    }
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            message: "How many would you like to purchase?",
+            name: "quantity",
+            validate: checkForNum
+        }
+    ])
+    .then((response) => {
+        console.log("Checking to see if we can purchase " + response.quantity + " of " + item);
+    })
+};
 
 // ------------------------------------------------------------------------------
 
