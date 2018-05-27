@@ -1,9 +1,12 @@
-// I guess this is how you do it in TypeScript (as opposed to... var inquirer = require("inquirer"); ...etc.)
+// I guess this is how you require in TypeScript (as opposed to... var inquirer = require("inquirer"); ...etc.)
 import inquirer = require("inquirer");
 import mysql = require("mysql");
+import { getLengthOfLongestItem } from "./tableMaker";
+import { generatePadding } from "./tableMaker";
+import { generateHorizontalSeparator } from "./tableMaker";
 
-// Since I don't expect to create other objects of class ConnectionInfo, doing it this way is rather pointless.
-// I'm only doing it for learning.
+// Since I don't expect to instantiate other objects of class ConnectionInfo, doing it this way is functionally pointless.
+// I'm only doing it for the learning.
 class ConnectionInfo {
     // class definition
     host: string;
@@ -22,11 +25,13 @@ class ConnectionInfo {
     }
 }
 
+// oh heeyyyooooo it's a root password in plain text on a public GitHub
 var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");
 
-// all that work, and THIS is the payoff?!
+// all that work, and THIS is the payoff?!  As I said earlier, all this was for learning.
 var connection = mysql.createConnection(connectionInfo);
 
+// it does what it says.  connect to the database
 var connectToDB = function(): void {
     connection.connect((err) => {
         if (err) throw err;
@@ -34,53 +39,55 @@ var connectToDB = function(): void {
     })
 }
 
+// disconnects from the database
 var disconnectFromDB = function(): void {
     connection.end();
     console.log("disconnected from database.\n");
 }
 
-var dumpTableContents = function(): void {
+var drawTable = function(): void {
     connection.query("SELECT item_id, product_name, price FROM products", function(err, res) {
         if (err) throw err;
-        // console.log(res);
+        // specifying that these vars are numbers is redundant because I know the function returns a number
+        // and I ABSOLUTELY KNOW it returns a number because TypeScript gives me confidence!
         var idLength: number = getLengthOfLongestItem(res, "item_id");
         var productLength: number = getLengthOfLongestItem(res, "product_name");
         var priceLength: number = getLengthOfLongestItem(res, "price");
-        // console.log("idLength: " + idLength);
-        // console.log("productLength: " + productLength);
-        // console.log("priceLength: " + priceLength);
-
+        var separator: string;
+        var lenSeparator: number;
+        var id: string = "ID" + generatePadding(idLength, "ID".length);
+        var product: string = "PRODUCT" + generatePadding(productLength, "PRODUCT".length);
+        var price: string = "PRICE" + generatePadding(priceLength, "PRICE".length);
+        var header: string = "";
         
-
-      });
-}
-
-// functionality for pretty printing text tables in the terminal:
-// fundamentally, what a text table is... is making it so each item in a column has the same length
-// so we need to get the length of the longest item in a column, then pad every item with a shorter length the appropriate amount
-var getLengthOfLongestItem = function(response: object[], col: string | number): number {
-    var currentLongest: number = 0;
-    for (var i: number = 0; i < response.length; i++) {
-        if (response[i][col].toString().length > currentLongest) {
-            currentLongest = response[i][col].toString().length;
+        // insert padding on the right-hand side for each entry
+        for (var i: number = 0; i < res.length; i++) {
+            res[i].item_id += generatePadding(idLength, res[i].item_id.toString().length);
+            res[i].product_name += generatePadding(productLength, res[i].product_name.length);
+            res[i].price += generatePadding(priceLength, res[i].price.toString().length);
         }
-    }
-    return currentLongest;
-}
 
-// then we need to generate the right number of spaces for everything shorter than the longest item
-// this is the difference between the length of the longest string and the current string we're considering
-var generatePadding = function(lenOfLongest: number, lenOfCurrent: number): string {
-    var space: string = "";
-    var difference: number = lenOfLongest - lenOfCurrent;
-    for (var i: number = 0; i < difference; i++) {
-        space += " ";
-    }
-    return space;
+        // generate the separator based on the length of the first row (all rows are now the same length due to padding insertion)
+        lenSeparator = ("| " + res[0].item_id + " | " + res[0].product_name + " | " + res[0].price + " |").length;
+        separator = generateHorizontalSeparator(lenSeparator);
+
+        // print out the table header
+        console.log(separator);
+        header = "| " + id + " | " + product + " | " + price + " |";
+        console.log(header);
+
+        // print out the rest of the table
+        console.log(separator);
+        for (var i: number = 0; i < res.length; i++) {
+            var lineItem: string = "| " + res[i].item_id + " | " + res[i].product_name + " | " + res[i].price + " |";
+            console.log(lineItem);
+        }
+        console.log(separator);
+    })
 }
 
 // ------------------------------------------------------------------------------
 
 connectToDB();
-dumpTableContents();
+drawTable();
 disconnectFromDB();
