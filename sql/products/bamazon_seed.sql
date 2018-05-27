@@ -1,0 +1,15 @@
+USE bamazon;
+
+INSERT INTO products (product_name, department_name, maker, product_description, price, stock_quantity)
+VALUES
+("Nikon D850", "Photography", "Nikon", "Enthusiast level full-frame DSLR camera.", 3299.95, 3),
+("Nikon D500", "Photography", "Nikon", "Professional grade APS-C camera that's perfect for sports or wildlife photographers.", 1899.95, 8),
+("Nikon AF-S NIKKOR 600mm f/4E FL ED VR", "Nikon", "Photography", "About as close to perfection as humanly possible, this prime lens is end-game gear for sports or nature photographers.", 12299.95, 2),
+("Sigma 150-600mm F5-6.3 DG OS HSM | C", "Sigma", "Photography", "Practical super telephoto lens for sports or nature photography at an accessible price.", 989, 4),
+("Chopin: Piano Concerto No. 1; Ballades", "Music", "Chopin, Seong-Jin Cho, Gianandrea Noseda, and London Symphony Orchestra", """... superb performances ... Here is his first-ever studio recording, and he shines . . . [conductor Noseda] shapes the orchestral contributions superbly ... [Cho gives his concerto] interpretation a perfectly lyrical slant; yet it is the attention to detail that impresses most. ..."" --Record Review / Colin Clarke, International Piano (London) / 01. July 2017", 11.95, 231),
+("Wagner: Lohengrin Box Set", "Music", "Sir Georg Solti, Plácido Domingo, Jessye Norman...", """Sir George Solti's renditions of Wagner's operas often defined the standard interpretation practice in the post-World War II musical world, and he is at his best in this late 1980s digitally mastered recording partnered with his long-time collaborators, the Vienna Philharmonic--perhaps the most emotionally satisfying orchestra in the world for these challenging scores."" --Christian C. Rix", 29.99, 21),
+("EVGA GeForce GTX 1080 Ti FTW3 GAMING", "Electronics", "EVGA", "Real Base Clock: 1569 MHz/Real Boost Clock: 1683 MHz; Memory Detail: 11264MB GDDR5X", 749.95, 22),
+("The Little Book of Common Sense Investing", "Books", "John C. Bogle", "The Little Book of Common Sense Investing is the classic guide to getting smart about the market. Legendary mutual fund pioneer John C. Bogle reveals his key to getting more out of investing: low-cost index funds. Bogle describes the simplest and most effective investment strategy for building wealth over the long term: buy and hold, at very low cost, a mutual fund that tracks a broad stock market Index such as the S&P 500.", 17.00, 40),
+("Thinking, Fast and Slow", "Books", "Daniel Kahneman", "In the international bestseller, Thinking, Fast and Slow, Daniel Kahneman, the renowned psychologist and winner of the Nobel Prize in Economics, takes us on a groundbreaking tour of the mind and explains the two systems that drive the way we think.", 10.12, 440),
+("Star Wars: Darth Plagueis", "Books", "James Luceno", "At long last, the Star Wars story of the mysterious Sith Lord Darth Plagueis and his apprentice, Darth Sidious, is revealed!", 7.19, 152),
+("Scalp Massager 2-pack – Handheld Head Massage Tingler", "Health", "", "Feel your stress melt away... fast!", 5.99, 267);
