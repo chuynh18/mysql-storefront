@@ -62,7 +62,8 @@ var pushToChoices = function(id: number, name: string): void {
 }
 
 var drawTable = function(): void {
-    connection.query("SELECT item_id, product_name, price FROM products", function(err, res) {
+    var query: string = "SELECT item_id, product_name, price FROM products";
+    connection.query(query, function(err, res) {
         if (err) throw err;
         // specifying that these vars are numbers is redundant because I know the function returns a number
         // and I ABSOLUTELY KNOW it returns a number because TypeScript gives me confidence!
@@ -115,20 +116,20 @@ var mainMenu = function(): void {
         }
     ])
     .then((response) => {
-        var id: number;
+        var itemId: number;
         for (var i: number = 0; i < choices.length; i++) {
             if (response.purchase === choices[i].name) {
-                id = choices[i].id;
-                break;
+                itemId = choices[i].id;
             }
         }
-        quantityMenu(response.purchase, id);
+        quantityMenu(response.purchase, itemId);
     })
 }
 
-var quantityMenu = function(item: string, input: number): void {
-    function checkForNum(input: any): boolean | string {
-        if (/^[0-9]/.test(input)) {
+var quantityMenu = function(item: string, itemId: number): void {
+    var query: string = "SELECT stock_quantity FROM products WHERE ?";
+    function checkForNum(qty: any): boolean | string {
+        if (/^[0-9]/.test(qty)) {
             return true;
         }
         else {return "Please enter a number."}
@@ -143,7 +144,18 @@ var quantityMenu = function(item: string, input: number): void {
         }
     ])
     .then((response) => {
-        console.log("Checking to see if we can purchase " + response.quantity + " of " + item);
+        var query: string = "SELECT stock_quantity FROM products WHERE ?";
+        console.log("One moment please.  I'm checking to see if I can purchase " + response.quantity + " of " + item + " for you.");
+        connection.query(query, 
+            {item_id: itemId},
+            function(err, res) {
+            if (response.quantity > res[0].stock_quantity) {
+                console.log("Sorry, we don't have that many in stock.  Please try ordering fewer.");
+                quantityMenu(item, itemId);
+            }
+            else {console.log("you may purchase");}
+            // replace with appropriate MySQL queries
+        })
     })
 };
 
@@ -151,4 +163,3 @@ var quantityMenu = function(item: string, input: number): void {
 
 connectToDB();
 drawTable();
-disconnectFromDB();
