@@ -25,6 +25,7 @@ class ConnectionInfo {
     }
 }
 
+// this is used to build out the main menu
 class Choices {
     id: number;
     name: string;
@@ -35,6 +36,7 @@ class Choices {
     }
 }
 
+// this holds the items that constitute the main menu
 var choices: any[] = [];
 
 // oh heeyyyooooo it's a root password in plain text on a public GitHub
@@ -57,6 +59,7 @@ var disconnectFromDB = function(): void {
     console.log("disconnected from database.\n");
 }
 
+// this takes item ids and names from the db, packages them into objects, and pushes the object into the choices array
 var pushToChoices = function(id: number, name: string): void {
     choices.push(new Choices(id, name));
 }
@@ -70,16 +73,16 @@ var drawTable = function(): void {
         if (err) throw err;
         // specifying that these vars are numbers is redundant because I know the function returns a number
         // and I ABSOLUTELY KNOW it returns a number because TypeScript gives me confidence!
-        var idLength: number = getLengthOfLongestItem(res, "item_id");
-        var productLength: number = getLengthOfLongestItem(res, "product_name");
-        var priceLength: number = getLengthOfLongestItem(res, "price");
-        var stockLength: number = getLengthOfLongestItem(res, "stock_quantity");
+        var idLength: number = getLengthOfLongestItem(res, "item_id", "ID".length);
+        var productLength: number = getLengthOfLongestItem(res, "product_name", "PRODUCT".length);
+        var priceLength: number = getLengthOfLongestItem(res, "price", "PRICE".length);
+        var stockLength: number = getLengthOfLongestItem(res, "stock_quantity", "IN STOCK".length);
         var separator: string;
         var lenSeparator: number;
         var id: string = "ID" + generatePadding(idLength, "ID".length);
         var product: string = "PRODUCT" + generatePadding(productLength, "PRODUCT".length);
         var price: string = "PRICE" + generatePadding(priceLength, "PRICE".length);
-        var stock: string = "QTY" + generatePadding(stockLength, "QTY".length);
+        var stock: string = "IN STOCK" + generatePadding(stockLength, "IN STOCK".length);
         var header: string = "";
         
         // insert padding on the right-hand side for each entry
