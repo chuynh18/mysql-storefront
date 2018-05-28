@@ -62,9 +62,10 @@ var pushToChoices = function(id: number, name: string): void {
 }
 
 // I'm not happy that I've only managed to partially pull out some of the table functionality.
-// A lot of heavy lifting is still done inside the main program.
+// A lot of heavy lifting is still done inside the main program, making it hard to understand what's going on.
+// I know this isn't great.  But totally separating the table functionality is not an easy problem.
 var drawTable = function(): void {
-    var query: string = "SELECT item_id, product_name, price FROM products";
+    var query: string = "SELECT item_id, product_name, price, stock_quantity FROM products";
     connection.query(query, function(err, res) {
         if (err) throw err;
         // specifying that these vars are numbers is redundant because I know the function returns a number
@@ -72,11 +73,13 @@ var drawTable = function(): void {
         var idLength: number = getLengthOfLongestItem(res, "item_id");
         var productLength: number = getLengthOfLongestItem(res, "product_name");
         var priceLength: number = getLengthOfLongestItem(res, "price");
+        var stockLength: number = getLengthOfLongestItem(res, "stock_quantity");
         var separator: string;
         var lenSeparator: number;
         var id: string = "ID" + generatePadding(idLength, "ID".length);
         var product: string = "PRODUCT" + generatePadding(productLength, "PRODUCT".length);
         var price: string = "PRICE" + generatePadding(priceLength, "PRICE".length);
+        var stock: string = "QTY" + generatePadding(stockLength, "QTY".length);
         var header: string = "";
         
         // insert padding on the right-hand side for each entry
@@ -85,21 +88,22 @@ var drawTable = function(): void {
             res[i].item_id += generatePadding(idLength, res[i].item_id.toString().length);
             res[i].product_name += generatePadding(productLength, res[i].product_name.length);
             res[i].price += generatePadding(priceLength, res[i].price.toString().length);
+            res[i].stock_quantity += generatePadding(stockLength, res[i].stock_quantity.toString().length);
         }
 
         // generate the separator based on the length of the first row (all rows are now the same length due to padding insertion)
-        lenSeparator = ("| " + res[0].item_id + " | " + res[0].product_name + " | " + res[0].price + " |").length;
+        lenSeparator = ("| " + res[0].item_id + " | " + res[0].product_name + " | " + res[0].price + " | " + res[0].stock_quantity + " |").length;
         separator = generateHorizontalSeparator(lenSeparator);
 
         // print out the table header
         console.log(separator);
-        header = "| " + id + " | " + product + " | " + price + " |";
+        header = "| " + id + " | " + product + " | " + price + " | " + stock + " |";
         console.log(header);
 
         // print out the rest of the table
         console.log(separator);
         for (var i: number = 0; i < res.length; i++) {
-            var lineItem: string = "| " + res[i].item_id + " | " + res[i].product_name + " | " + res[i].price + " |";
+            var lineItem: string = "| " + res[i].item_id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " |";
             console.log(lineItem);
         }
         console.log(separator);
