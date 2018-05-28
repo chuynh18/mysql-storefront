@@ -230,7 +230,6 @@ var continueShopping = function(): void {
     .then((response) => {
         if (response.confirm) {
             drawTable();
-            mainMenu();
         }
         else {
             console.log("We hope to see you again soon!");
