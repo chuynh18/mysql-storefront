@@ -61,6 +61,8 @@ var pushToChoices = function(id: number, name: string): void {
     choices.push(new Choices(id, name));
 }
 
+// I'm not happy that I've only managed to partially pull out some of the table functionality.
+// A lot of heavy lifting is still done inside the main program.
 var drawTable = function(): void {
     var query: string = "SELECT item_id, product_name, price FROM products";
     connection.query(query, function(err, res) {
@@ -117,19 +119,32 @@ var mainMenu = function(): void {
     ])
     .then((response) => {
         var itemId: number;
+        var query: string = "SELECT stock_quantity FROM products WHERE ?";
         for (var i: number = 0; i < choices.length; i++) {
             if (response.purchase === choices[i].name) {
                 itemId = choices[i].id;
             }
         }
-        quantityMenu(response.purchase, itemId);
+        connection.query(query, 
+            {item_id: itemId},
+            function(err, res) {
+            if (res[0].stock_quantity === 0) {
+                console.log("\nSorry, this item isn't currently in stock.  Please order something else.\n");
+                mainMenu();
+            }
+            else {
+                quantityMenu(response.purchase, itemId);
+            }
+        })
     })
 }
 
 var quantityMenu = function(item: string, itemId: number): void {
-    var query: string = "SELECT stock_quantity FROM products WHERE ?";
     function checkForNum(qty: any): boolean | string {
-        if (/^[0-9]/.test(qty)) {
+        if (parseInt(qty) === 0) {
+            return ("Please purchase more than 0 items.  Besides, what does purchasing 0 items even mean?")
+        }
+        else if (/^[0-9]/.test(qty)) {
             return true;
         }
         else {return "Please enter a number."}
@@ -153,12 +168,76 @@ var quantityMenu = function(item: string, itemId: number): void {
                 console.log("Sorry, we don't have that many in stock.  Please try ordering fewer.");
                 quantityMenu(item, itemId);
             }
-            else {console.log("you may purchase");}
-            // replace with appropriate MySQL queries
+            else {
+                purchaseConfirmation(item, itemId, response.quantity, res[0].stock_quantity);
+            }
         })
     })
 };
 
+var purchaseConfirmation = function(item: string, itemId: number, qty: number, inStock: number): void {
+    var query: string = "SELECT price FROM products WHERE ?";
+    var total: string;
+    var price: number;
+    connection.query(query, 
+        {item_id: itemId},
+        function(err, res) {
+            price = res[0].price;
+            total = (qty * price).toFixed(2);
+            console.log(`Your purchase for ${qty} of ${item} will amount to $${total}.`);
+            inquirer
+        .prompt([
+            {
+                type: "confirm",
+                message: "Would you like to finalize this purchase?",
+                name: "confirm",
+                default: true
+            }
+        ])
+        .then((answer) => {
+            if (answer.confirm) {
+                updateDB(itemId, qty, inStock);
+            }
+            else {
+                console.log("Not a problem!  Your purchase has been canceled.");
+                continueShopping();
+            }
+        })
+    })
+}
+
+var updateDB = function(itemId: number, qty: number, inStock: number):void {
+    var newValue: number = inStock - qty;
+    var query: string = `UPDATE products SET stock_quantity = ${newValue} WHERE ?`;
+    connection.query(query, 
+        {item_id: itemId},
+        function(err, res) {
+            console.log("Your purchase was made successfully!  Thank you for shopping with us.");
+            continueShopping();
+        })
+}
+
+var continueShopping = function(): void {
+    inquirer
+    .prompt([
+        {
+            type: "confirm",
+            message: "Would you like to continue shopping?",
+            name: "confirm",
+            default: true
+        }
+    ])
+    .then((response) => {
+        if (response.confirm) {
+            drawTable();
+            mainMenu();
+        }
+        else {
+            console.log("We hope to see you again soon!");
+            disconnectFromDB();
+        }
+    })
+}
 // ------------------------------------------------------------------------------
 
 connectToDB();
