@@ -2,9 +2,10 @@
 import inquirer = require("inquirer");
 import mysql = require("mysql");
 import { ConnectionInfo } from "./createDbConnection";
-import{ connectionInfo } from "./createDbConnection";
+import { connectionInfo } from "./createDbConnection";
 import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";
+import { printLogo } from "./bamazonLogo";
 
 // this is used to build out the main menu
 class Choices {
@@ -43,6 +44,8 @@ var pushToChoices = function(id: number, name: string): void {
 // draws the product table and then displays the main menu
 var displayTableAndStart = function(): void {
     var query: string = "SELECT item_id, product_name, price, stock_quantity FROM products";
+    printLogo();
+    
     connection.query(query, function(err, res) {
         if (err) throw err;
 
@@ -50,6 +53,7 @@ var displayTableAndStart = function(): void {
         for (var i: number = 0; i < res.length; i++) {
             pushToChoices(res[i].item_id, res[i].product_name);
         }
+
 
         // this draws the tables by using my own table-generating code (contained in tableMaker.ts)
         // make sure the number and order of the user-facing titles matches the MySQL query
@@ -192,6 +196,5 @@ var continueShopping = function(): void {
     })
 }
 // ------------------------------------------------------------------------------
-
 connectToDB();
 displayTableAndStart();
