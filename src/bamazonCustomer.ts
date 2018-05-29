@@ -1,8 +1,8 @@
 // I guess this is how you require in TypeScript (as opposed to... var inquirer = require("inquirer"); ...etc.)
 import inquirer = require("inquirer");
-import mysql = require("mysql");
-import { ConnectionInfo } from "./createDbConnection";
-import { connectionInfo } from "./createDbConnection";
+import { connection } from "./createDbConnection";
+import { connectToDB } from "./createDbConnection";
+import { disconnectFromDB } from "./createDbConnection";
 import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";
 import { printLogo } from "./bamazonLogo";
@@ -20,21 +20,6 @@ class Choices {
 
 // this holds the items that constitute the main menu
 var choices: any[] = [];
-
-// the database connection object (see createDbConnection.ts)
-var connection = mysql.createConnection(connectionInfo);
-
-// it does what it says.  connect to the database
-var connectToDB = function(): void {
-    connection.connect((err) => {
-        if (err) throw err;
-    })
-}
-
-// disconnects from the database
-var disconnectFromDB = function(): void {
-    connection.end();
-}
 
 // this takes item ids and names from the db, packages them into objects, and pushes the object into the choices array
 var pushToChoices = function(id: number, name: string): void {

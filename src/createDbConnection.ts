@@ -1,3 +1,5 @@
+import mysql = require("mysql");
+
 export class ConnectionInfo {
     // class definition
     host: string;
@@ -18,3 +20,18 @@ export class ConnectionInfo {
 
 // EDIT HERE if your database credentials are different
 export var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");
+
+// the database connection object (see createDbConnection.ts)
+export var connection = mysql.createConnection(connectionInfo);
+
+// it does what it says.  connect to the database
+export var connectToDB = function(): void {
+    connection.connect((err) => {
+        if (err) throw err;
+    })
+}
+
+// disconnects from the database
+export var disconnectFromDB = function(): void {
+    connection.end();
+}
