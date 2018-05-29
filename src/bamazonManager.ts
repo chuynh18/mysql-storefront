@@ -74,11 +74,17 @@ var selectProductToUpdate = function(): void {
         }
     ])
     .then(response => {
-        updateProductQuantity(response.update)
+        var itemId: number;
+        for (var i: number = 0; i < choices.length; i++) {
+            if (response.update === choices[i].name) {
+                itemId = choices[i].id;
+            }
+        }
+        updateProductQuantity(itemId, response.update);
     })
 }
 
-var updateProductQuantity = function(name: string): void {
+var updateProductQuantity = function(itemId: number, name: string): void {
     console.log(`You're updating ${name}.`);
     function checkForNum(qty: any): boolean | string {
         if (qty === "cancel" || qty === "quit") {
@@ -107,23 +113,27 @@ var updateProductQuantity = function(name: string): void {
             disconnectFromDB();
         }
         else if (parseInt(response.quantity) > 0) {
-            addToInventory(name, parseInt(response.quantity));
+            addToInventory(itemId, name, parseInt(response.quantity));
         }
         else if (parseInt(response.quantity) < 0) {
             console.log("Sorry, please enter a valid number.");
-            updateProductQuantity(name);
+            updateProductQuantity(itemId, name);
         }
     })
 }
 
-var addToInventory = function(name: string, qty: number): void {
-    console.log(`Adding ${qty} to our stock of ${name}.`);
-    displayTable(``);
-    var query: string = `SET stock_quantity=stockquantity+${qty} FROM products WHERE ?`;
-    connection.query(query, 
-        {product_name: name},
-        function(err, res) {
+var addToInventory = function(itemId: number, name: string, qty: number): void {
+    console.log(`Adding ${qty} to our stock of ${name}.  Here's the quantity before the update...`);
+    displayTable(`SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products WHERE product_name = '${name}'`);
+    console.log("");
 
+    var query: string = `UPDATE products SET stock_quantity=stock_quantity+${qty} WHERE item_id=${itemId}`;
+    console.log(query);
+    connection.query(query,
+    function(err, res) {
+        console.log("\nQuantity updated.  Please confirm...");
+        displayTable(`SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products WHERE product_name = '${name}'`);
+        setTimeout(mainMenu, 100);
     })
 }
 
