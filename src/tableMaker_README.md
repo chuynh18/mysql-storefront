@@ -20,9 +20,7 @@ import { makeTable } from "./tableMaker";</pre>
 
 1. Overall, it'll look something like this <pre>import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";
-
 // Other code you might have, such as actually connecting to your database
-
 var query: string = "(YOUR MYSQL QUERY GOES HERE)";
 connection.query(query, function(err, res) {
     if (err) throw err;
