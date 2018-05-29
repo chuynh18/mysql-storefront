@@ -50,6 +50,7 @@ var displayTableAndStart = function(): void {
         if (err) throw err;
 
         // populate the purchase menu
+        choices = [];
         for (var i: number = 0; i < res.length; i++) {
             pushToChoices(res[i].item_id, res[i].product_name);
         }
@@ -102,6 +103,9 @@ var quantityMenu = function(item: string, itemId: number): void {
         if (parseInt(qty) === 0) {
             return ("Please purchase more than 0 items.  Besides, what does purchasing 0 items even mean?")
         }
+        else if (qty === "cancel" || qty === "quit") {
+            return true;
+        }
         else if (/^[0-9]/.test(qty)) {
             return true;
         }
@@ -111,23 +115,39 @@ var quantityMenu = function(item: string, itemId: number): void {
     .prompt([
         {
             type: "input",
-            message: "How many would you like to purchase?",
+            message: "How many would you like to purchase?  Or type \"cancel\" to go to the main menu or \"quit\" to leave.",
             name: "quantity",
             validate: checkForNum
         }
     ])
     .then((response) => {
         var query: string = "SELECT stock_quantity FROM products WHERE ?";
-        console.log("One moment please.  I'm checking to see if I can purchase " + response.quantity + " of " + item + " for you.");
         connection.query(query, 
             {item_id: itemId},
             function(err, res) {
-            if (response.quantity > res[0].stock_quantity) {
+            if (response.quantity === "cancel") {
+                displayTableAndStart();
+            }
+            else if (response.quantity === "quit") {
+                console.log("We hope to see you again soon!");
+                disconnectFromDB();
+            }
+            else if (parseInt(response.quantity) < 0) {
+                console.log("Sorry, please enter a valid number.");
+                quantityMenu(item, itemId);
+            }
+            else if (parseInt(response.quantity) > res[0].stock_quantity) {
+                console.log("One moment please.  I'm checking to see if I can purchase " + parseInt(response.quantity) + " of " + item + " for you.");
                 console.log("Sorry, we don't have that many in stock.  Please try ordering fewer.");
                 quantityMenu(item, itemId);
             }
+            else if (parseInt(response.quantity) <= res[0].stock_quantity) {
+                console.log("One moment please.  I'm checking to see if I can purchase " + parseInt(response.quantity) + " of " + item + " for you.");
+                purchaseConfirmation(item, itemId, parseInt(response.quantity), res[0].stock_quantity);
+            }
             else {
-                purchaseConfirmation(item, itemId, response.quantity, res[0].stock_quantity);
+                console.log("Sorry, please enter a valid number.");
+                quantityMenu(item, itemId);
             }
         })
     })
@@ -164,7 +184,7 @@ var purchaseConfirmation = function(item: string, itemId: number, qty: number, i
     })
 }
 
-var updateDB = function(itemId: number, qty: number, inStock: number):void {
+var updateDB = function(itemId: number, qty: number, inStock: number): void {
     var newValue: number = inStock - qty;
     var query: string = `UPDATE products SET stock_quantity = ${newValue} WHERE ?`;
     connection.query(query, 

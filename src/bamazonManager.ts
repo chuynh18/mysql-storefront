@@ -42,15 +42,17 @@ var pushToChoices = function(id: number, name: string): void {
 }
 
 // draws the product table and then displays the main menu
-var displayTable = function(): void {
-    var query: string = "SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products";
-
+var displayTable = function(query: string, buildMenu?: boolean): void {
     connection.query(query, function(err, res) {
         if (err) throw err;
 
-        // populate the purchase menu
-        for (var i: number = 0; i < res.length; i++) {
-            pushToChoices(res[i].item_id, res[i].product_name);
+        // populate the menu.  this is not used by some of the menu options, so let's short circuit it when appropriate
+        // this if statement short circuits the for loop if buildMenu is false or undefined, saving us some computation!  woot
+        if (buildMenu || false) {
+            choices = [];
+            for (var i: number = 0; i < res.length; i++) {
+                pushToChoices(res[i].item_id, res[i].product_name);
+            }
         }
 
         // this draws the tables by using my own table-generating code (contained in tableMaker.ts)
@@ -58,14 +60,74 @@ var displayTable = function(): void {
         sendTitles(["ID", "DEPARTMENT", "PRODUCT", "MFG/AUTHOR/ARTIST", "PRICE", "IN STOCK"]);
         // send the MySQL query response object to tableMaker.  It handles the rest and will console.log out the table
         makeTable(res);
+    })
+}
 
-        setTimeout(mainMenu,200);
+var selectProductToUpdate = function(): void {
+    inquirer
+    .prompt([
+        {
+            type: "list",
+            message: "Which product would you like to update?",
+            choices: choices,
+            name: "update"
+        }
+    ])
+    .then(response => {
+        updateProductQuantity(response.update)
+    })
+}
+
+var updateProductQuantity = function(name: string): void {
+    console.log(`You're updating ${name}.`);
+    function checkForNum(qty: any): boolean | string {
+        if (qty === "cancel" || qty === "quit") {
+            return true;
+        }
+        else if (/^[0-9]/.test(qty)) {
+            return true;
+        }
+        else {return "Please enter a number."}
+    }
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            message: "How many would you like to add?  Or type \"cancel\" or \"0\" to go to the main menu or \"quit\" to leave.",
+            name: "quantity",
+            validate: checkForNum
+        }
+    ])
+    .then (response => {
+        if (response.quantity === "cancel" || response.quantity === "0") {
+            mainMenu();
+        }
+        else if (response.quantity === "quit") {
+            console.log("Logging you out.");
+            disconnectFromDB();
+        }
+        else if (parseInt(response.quantity) > 0) {
+            addToInventory(name, parseInt(response.quantity));
+        }
+        else if (parseInt(response.quantity) < 0) {
+            console.log("Sorry, please enter a valid number.");
+            updateProductQuantity(name);
+        }
+    })
+}
+
+var addToInventory = function(name: string, qty: number): void {
+    console.log(`Adding ${qty} to our stock of ${name}.`);
+    displayTable(``);
+    var query: string = `SET stock_quantity=stockquantity+${qty} FROM products WHERE ?`;
+    connection.query(query, 
+        {product_name: name},
+        function(err, res) {
+
     })
 }
 
 var mainMenu = function(): void {
-    printLogo();
-
     inquirer
     .prompt([
         {
@@ -78,15 +140,18 @@ var mainMenu = function(): void {
     .then((response) => {
         switch (response.manage) {
             case "View Products for Sale":
-            displayTable();
+            displayTable("SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products");
+            setTimeout(mainMenu,100);
             break;
 
             case "View Low Inventory":
-            // code here
+            displayTable("SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products WHERE stock_quantity <= 5");
+            setTimeout(mainMenu,100);
             break;
 
             case "Add to Inventory":
-            // code here
+            displayTable("SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products", true);
+            setTimeout(selectProductToUpdate,100);
             break;
 
             case "Add New Product":
@@ -100,4 +165,5 @@ var mainMenu = function(): void {
     })
 }
 // ------------------------------------------------------------------------------
-mainMenu();
+printLogo();
+setTimeout(mainMenu, 1000);
