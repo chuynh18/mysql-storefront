@@ -18,7 +18,9 @@ import { makeTable } from "./tableMaker";</pre>
 
 1. Lastly, send the MySQL response object to tableMaker.
 
-1. Overall, it'll look something like this <pre>import { sendTitles } from "./tableMaker";
+1. Overall, it'll look something like this...
+
+<pre>import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";</pre>
 
 <pre>// Other code you might have, such as actually connecting to your database</pre>
