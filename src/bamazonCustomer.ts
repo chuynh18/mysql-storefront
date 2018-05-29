@@ -74,8 +74,10 @@ var drawTable = function(): void {
             pushToChoices(res[i].item_id, res[i].product_name);
         }
 
-        // make sure the order of the user-facing titles matches the MySQL query
+        // this draws the tables by using my own table-generating code (contained in tableMaker.ts)
+        // make sure the number and order of the user-facing titles matches the MySQL query
         sendTitles(["ID", "PRODUCT", "PRICE", "IN STOCK"]);
+        // send the MySQL query response object to tableMaker.  It handles the rest and will console.log out the table
         makeTable(res);
 
         setTimeout(mainMenu, 200);

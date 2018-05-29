@@ -139,10 +139,14 @@ var generateHorizontalSeparator = function(howManyChar: number): string {
 
 var generateHeader = function(): string {
     var header = leftWall;
-    tableMetadata.forEach(element => {
-        header += element.title + wall;
-    })
-    header = header.slice(0, header.length - 2);
+    for (var i:number = 0; i < tableMetadata.length; i++) {
+        if (i === tableMetadata.length - 1) {
+            header += tableMetadata[i].title;
+        }
+        else {
+            header += tableMetadata[i].title + wall;
+        }
+    }
     header += rightWall;
     return header;
 }
@@ -150,10 +154,14 @@ var generateHeader = function(): string {
 var printTableBody = function(): void {
     table.forEach(element => {
         var row: string = leftWall;
-        tableMetadata.forEach(entry => {
-            row += element[entry.name] + wall;
-        })
-        row = row.slice(0,row.length - 2);
+        for (var i:number = 0; i < tableMetadata.length; i++) {
+            if (i === tableMetadata.length - 1) {
+                row += element[tableMetadata[i].name];
+            }
+            else {
+                row += element[tableMetadata[i].name] + wall;
+            }
+        }
         row += rightWall;
         console.log(row);
     })
