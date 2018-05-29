@@ -9,8 +9,7 @@ How to use
 ----------
 My tableMaker code is invoked via two function calls.
 
-1. First, import the two functions exposed by `tableMaker.ts`.  This is done like so:
-<pre>import { sendTitles } from "./tableMaker";
+1. First, import the two functions exposed by `tableMaker.ts`.  This is done like so: <pre>import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";</pre>
 
 1. Execute your MySQL query.
@@ -19,8 +18,7 @@ import { makeTable } from "./tableMaker";</pre>
 
 1. Lastly, send the MySQL response object to tableMaker.
 
-1. Overall, it'll look something like this
-<pre>import { sendTitles } from "./tableMaker";
+1. Overall, it'll look something like this <pre>import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";
 
 // Other code you might have, such as actually connecting to your database
