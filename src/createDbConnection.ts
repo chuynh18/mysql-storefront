@@ -1,6 +1,7 @@
+// createDbConnection is now responsible for MySQL stuff; bamazonCustomer et al. no longer require the mysql npm package
 import mysql = require("mysql");
 
-export class ConnectionInfo {
+class ConnectionInfo {
     // class definition
     host: string;
     port: number;
@@ -19,7 +20,7 @@ export class ConnectionInfo {
 }
 
 // EDIT HERE if your database credentials are different
-export var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");
+var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");
 
 // the database connection object (see createDbConnection.ts)
 export var connection = mysql.createConnection(connectionInfo);

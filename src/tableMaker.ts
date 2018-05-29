@@ -5,13 +5,13 @@ var wall: string = " | ";
 var rightWall: string = " |";
 
 // this variable holds the response from MySQL
-var table: object[];
+var table: any;
 
 // this holds relevant metadata for each column so we can appropriately pad each entry in each column
-var tableMetadata;
+var tableMetadata: any;
 
 // this temporarily holds the user-facing titles for each column
-var tableTitles;
+var tableTitles: string[];
 
 var horizontalSeparator: string;
 
@@ -24,6 +24,7 @@ export var makeTable = function(tableResponse: object[]): void {
     // Perform the operations so that we can print out the table
     getObjectKeys();
     convertTableKeys();
+    priceToFixed2();
     updateMetadataWithTitles();
     metadataLongestLength();
     padTitle();
@@ -82,6 +83,12 @@ var updateMetadataWithTitles = function(): void {
         console.log("error:  ensure that you've provided the same number of user-facing titles as the number of columns coming from MySQL");
         console.log(`tableMetadata.length is ${tableMetadata.length}, but tableTitles.length is ${tableTitles.length}`);
     }
+}
+
+var priceToFixed2 = function(): void {
+    table.forEach(element => {
+        element.price = element.price.toFixed(2);
+    })
 }
 
 // gets the length of the longest item in a column and returns the length

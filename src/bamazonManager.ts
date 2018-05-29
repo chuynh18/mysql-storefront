@@ -121,6 +121,75 @@ var addToInventory = function(itemId: number, name: string, qty: number): void {
     })
 }
 
+var addProduct = function(): void {
+    function notNull(input: string): string | boolean {
+        if (!input || input === "") {
+            return "Sorry, this cannot be blank.  Please enter something";
+        }
+        else {return true;}
+    }
+    function checkForNum(qty: any): boolean | string {
+        if (!qty || qty === "0" || qty === "") {
+            return "Please enter a number greater than 0.";
+        }
+        else if (/^[0-9]/.test(qty)) {
+            return true;
+        }
+        else {return "Please enter a number."}
+    }
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            message: "Enter product name.  This can't be blank.",
+            name: "name",
+            validate: notNull
+        },
+        {
+            type: "input",
+            message: "Enter product's department.",
+            name: "department"
+        },
+        {
+            type: "input",
+            message: "Enter product's manufacturer, author, artist, maker, etc.",
+            name: "maker"
+        },
+        {
+            type: "input",
+            message: "Enter product description.",
+            name: "description"
+        },
+        {
+            type: "input",
+            message: "Enter product price.",
+            name: "price",
+            validate: checkForNum
+        },
+        {
+            type: "input",
+            message: "Enter product quantity (how many we have in stock).",
+            name: "quantity",
+            validate: checkForNum
+        }
+    ])
+    .then(response => {
+        var name = response.name;
+        var department = response.department;
+        var maker = response.maker;
+        var description = response.description;
+        var price = parseFloat(response.price).toFixed(2);
+        var quantity = parseInt(response.quantity);
+
+        connection.query(`INSERT INTO products (product_name, department_name, maker, product_description, price, stock_quantity) VALUES ('${name}', '${department}', '${maker}', '${description}', ${price}, ${quantity})`,
+        function(err, res) {
+            console.log("Product inserted:");
+            displayTable(`SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products WHERE product_name = '${name}'`);
+            setTimeout(mainMenu,100);
+        })
+    })
+}
+
 var mainMenu = function(): void {
     inquirer
     .prompt([
@@ -149,7 +218,7 @@ var mainMenu = function(): void {
             break;
 
             case "Add New Product":
-            // code here
+            addProduct();
             break;
 
             case "Quit":
