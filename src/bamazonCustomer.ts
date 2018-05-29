@@ -1,28 +1,9 @@
 // I guess this is how you require in TypeScript (as opposed to... var inquirer = require("inquirer"); ...etc.)
 import inquirer = require("inquirer");
 import mysql = require("mysql");
+import { ConnectionInfo } from "./createDbConnection";
 import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";
-
-// Since I don't expect to instantiate other objects of class ConnectionInfo, doing it this way is functionally pointless.
-// I'm only doing it for the learning.
-class ConnectionInfo {
-    // class definition
-    host: string;
-    port: number;
-    user: string;
-    password: string;
-    database: string;
-
-    // just your plain old constructor
-    constructor(host: string, port: number, user: string, password: string, database: string) {
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.password = password;
-        this.database = database;
-    }
-}
 
 // this is used to build out the main menu
 class Choices {
@@ -40,8 +21,6 @@ var choices: any[] = [];
 
 // oh heeyyyooooo it's a root password in plain text on a public GitHub
 var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");
-
-// all that work, and THIS is the payoff?!  As I said earlier, all this was for learning.
 var connection = mysql.createConnection(connectionInfo);
 
 // it does what it says.  connect to the database
@@ -61,10 +40,8 @@ var pushToChoices = function(id: number, name: string): void {
     choices.push(new Choices(id, name));
 }
 
-// I'm not happy that I've only managed to partially pull out some of the table functionality.
-// A lot of heavy lifting is still done inside the main program, making it hard to understand what's going on.
-// I know this isn't great.  But totally separating the table functionality is not an easy problem.
-var drawTable = function(): void {
+// draws the product table and then displays the main menu
+var displayTableAndStart = function(): void {
     var query: string = "SELECT item_id, product_name, price, stock_quantity FROM products";
     connection.query(query, function(err, res) {
         if (err) throw err;
@@ -206,7 +183,7 @@ var continueShopping = function(): void {
     ])
     .then((response) => {
         if (response.confirm) {
-            drawTable();
+            displayTableAndStart();
         }
         else {
             console.log("We hope to see you again soon!");
@@ -217,4 +194,4 @@ var continueShopping = function(): void {
 // ------------------------------------------------------------------------------
 
 connectToDB();
-drawTable();
+displayTableAndStart();
