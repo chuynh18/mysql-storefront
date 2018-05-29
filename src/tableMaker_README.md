@@ -27,8 +27,7 @@ var query: string = "(YOUR MYSQL QUERY GOES HERE)";
 connection.query(query, function(err, res) {
     if (err) throw err;
     sendTitles("Your", "User", "Facing", "Column", "Headers", "Here");
-    makeTable(res);
-</pre>
+    makeTable(res);</pre>
 
 Assumptions and gotchas
 -----------------------
