@@ -86,7 +86,7 @@ var updateMetadataWithTitles = function(): void {
 
 // gets the length of the longest item in a column and returns the length
 var getLengthOfLongestItem = function(response: object[], col: number | string, minLength?: number): number {
-    var longest = (minLength || 0);
+    var longest: number = (minLength || 0);
     for (var i: number = 0; i < response.length; i++) {
         if (response[i][col].toString().length > longest) {
             longest = response[i][col].toString().length;
@@ -138,7 +138,7 @@ var generateHorizontalSeparator = function(howManyChar: number): string {
 };
 
 var generateHeader = function(): string {
-    var header = leftWall;
+    var header: string = leftWall;
     for (var i:number = 0; i < tableMetadata.length; i++) {
         if (i === tableMetadata.length - 1) {
             header += tableMetadata[i].title;

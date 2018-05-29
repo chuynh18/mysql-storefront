@@ -15,3 +15,6 @@ export class ConnectionInfo {
         this.database = database;
     }
 }
+
+// EDIT HERE if your database credentials are different
+export var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");

@@ -32,8 +32,10 @@ connection.query(query, function(err, res) {
     makeTable(res);
 }</pre>
 
+In the above example, there are six arguments passed to `sendTitles()`.  Therefore, the MySQL query response object should contain six keys.
+
 Assumptions and gotchas
 -----------------------
 I'm using the mysql npm package located at https://www.npmjs.com/package/mysql.  There may be other MySQL libraries, and they may format their responses differently.  tableMaker expects the response to be an array of objects.
 
-Take care to have the number and order of arguments to `sendTitles()` match the number and order of columns you are SELECTing in your MySQL query.
+Take care to have the number and order of arguments to `sendTitles()` match the number and order of columns you are `SELECT`ing in your MySQL query.

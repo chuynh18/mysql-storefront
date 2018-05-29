@@ -2,6 +2,7 @@
 import inquirer = require("inquirer");
 import mysql = require("mysql");
 import { ConnectionInfo } from "./createDbConnection";
+import{ connectionInfo } from "./createDbConnection";
 import { sendTitles } from "./tableMaker";
 import { makeTable } from "./tableMaker";
 
@@ -19,8 +20,7 @@ class Choices {
 // this holds the items that constitute the main menu
 var choices: any[] = [];
 
-// oh heeyyyooooo it's a root password in plain text on a public GitHub
-var connectionInfo = new ConnectionInfo("localhost", 3306, "root", "8U#mDA345vUk5W6vtjVCSMStLUWHmD!u", "bamazon");
+// the database connection object (see createDbConnection.ts)
 var connection = mysql.createConnection(connectionInfo);
 
 // it does what it says.  connect to the database

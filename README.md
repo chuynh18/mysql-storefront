@@ -9,8 +9,10 @@ Afterward, simply run `tsc`.  The relevant JavaScript files will be generated an
 
 __But it's a hell of a lot easier to just run the JavaScript, so I recommend doing that.__
 
-Seeding the database
---------------------
+Connecting to and seeding the database
+--------------------------------------
+
+First, ensure you have a MySQL instance set up and running locally.  __If your database credentials are different, please make the appropriate edits to the `createDbConnection.ts` file.__
 
 The `sql` files that generate the appropriate tables can be found in `./sql`.
 
