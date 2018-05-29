@@ -1,9 +1,8 @@
 // I guess this is how you require in TypeScript (as opposed to... var inquirer = require("inquirer"); ...etc.)
 import inquirer = require("inquirer");
 import mysql = require("mysql");
-import { getLengthOfLongestItem } from "./tableMaker";
-import { generatePadding } from "./tableMaker";
-import { generateHorizontalSeparator } from "./tableMaker";
+import { sendTitles } from "./tableMaker";
+import { makeTable } from "./tableMaker";
 
 // Since I don't expect to instantiate other objects of class ConnectionInfo, doing it this way is functionally pointless.
 // I'm only doing it for the learning.
@@ -49,14 +48,12 @@ var connection = mysql.createConnection(connectionInfo);
 var connectToDB = function(): void {
     connection.connect((err) => {
         if (err) throw err;
-        console.log("connected as id " + connection.threadId + "\n");
     })
 }
 
 // disconnects from the database
 var disconnectFromDB = function(): void {
     connection.end();
-    console.log("disconnected from database.\n");
 }
 
 // this takes item ids and names from the db, packages them into objects, and pushes the object into the choices array
@@ -71,45 +68,16 @@ var drawTable = function(): void {
     var query: string = "SELECT item_id, product_name, price, stock_quantity FROM products";
     connection.query(query, function(err, res) {
         if (err) throw err;
-        // specifying that these vars are numbers is redundant because I know the function returns a number
-        // and I ABSOLUTELY KNOW it returns a number because TypeScript gives me confidence!
-        var idLength: number = getLengthOfLongestItem(res, "item_id", "ID".length);
-        var productLength: number = getLengthOfLongestItem(res, "product_name", "PRODUCT".length);
-        var priceLength: number = getLengthOfLongestItem(res, "price", "PRICE".length);
-        var stockLength: number = getLengthOfLongestItem(res, "stock_quantity", "IN STOCK".length);
-        var separator: string;
-        var lenSeparator: number;
-        var id: string = "ID" + generatePadding(idLength, "ID".length);
-        var product: string = "PRODUCT" + generatePadding(productLength, "PRODUCT".length);
-        var price: string = "PRICE" + generatePadding(priceLength, "PRICE".length);
-        var stock: string = "IN STOCK" + generatePadding(stockLength, "IN STOCK".length);
-        var header: string = "";
-        
-        // insert padding on the right-hand side for each entry
+
+        // populate the purchase menu
         for (var i: number = 0; i < res.length; i++) {
             pushToChoices(res[i].item_id, res[i].product_name);
-            res[i].item_id += generatePadding(idLength, res[i].item_id.toString().length);
-            res[i].product_name += generatePadding(productLength, res[i].product_name.length);
-            res[i].price += generatePadding(priceLength, res[i].price.toString().length);
-            res[i].stock_quantity += generatePadding(stockLength, res[i].stock_quantity.toString().length);
         }
 
-        // generate the separator based on the length of the first row (all rows are now the same length due to padding insertion)
-        lenSeparator = ("| " + res[0].item_id + " | " + res[0].product_name + " | " + res[0].price + " | " + res[0].stock_quantity + " |").length;
-        separator = generateHorizontalSeparator(lenSeparator);
+        // make sure the order of the user-facing titles matches the MySQL query
+        sendTitles(["ID", "PRODUCT", "PRICE", "IN STOCK"]);
+        makeTable(res);
 
-        // print out the table header
-        console.log(separator);
-        header = "| " + id + " | " + product + " | " + price + " | " + stock + " |";
-        console.log(header);
-
-        // print out the rest of the table
-        console.log(separator);
-        for (var i: number = 0; i < res.length; i++) {
-            var lineItem: string = "| " + res[i].item_id + " | " + res[i].product_name + " | " + res[i].price + " | " + res[i].stock_quantity + " |";
-            console.log(lineItem);
-        }
-        console.log(separator);
         setTimeout(mainMenu, 200);
     })
 }
