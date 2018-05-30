@@ -12,10 +12,10 @@ __But it's a hell of a lot easier to just run the JavaScript, so I recommend doi
 Connecting to and seeding the database
 --------------------------------------
 
-First, ensure you have a MySQL instance set up and running locally.  __If your database credentials are different, please make the appropriate edits to the `createDbConnection.ts` file.__
+First, ensure you have a MySQL instance set up and running locally.  __If your database credentials are different, please make the appropriate edits to the `createDbConnection.ts` file.__  You do not need to make edits anywhere else, as I've modularized the database code to this file.  After making edits, be sure to recompile by running `tsc` in the terminal.
 
 The `sql` files that generate the appropriate tables can be found in `./sql`.
 
-`bamazon_products_schema.sql` and `bamazon_products_seed.sql` are collectively responsible for generating the table used by `bamazonCustomer`.
+`bamazon_products_schema.sql` and `bamazon_products_seed.sql` are collectively responsible for generating the table used by `bamazonCustomer` and `bamazonManager`.
 
 Please be sure to use these `sql` files to create the relevant tables before running the corresponding programs.

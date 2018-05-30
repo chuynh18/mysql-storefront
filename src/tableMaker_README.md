@@ -32,7 +32,7 @@ connection.query(query, function(err, res) {
     makeTable(res);
 }</pre>
 
-In the above example, there are six arguments passed to `sendTitles()`.  Therefore, the MySQL query response object should contain six keys.
+In the above example, there are six arguments passed to `sendTitles()`.  Therefore, the MySQL response object should contain six keys.
 
 Assumptions and gotchas
 -----------------------
