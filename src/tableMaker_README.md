@@ -20,17 +20,19 @@ import { makeTable } from "./tableMaker";</pre>
 
 1. Overall, it'll look something like this...
 
-<pre>import { sendTitles } from "./tableMaker";
-import { makeTable } from "./tableMaker";</pre>
+```javascript
+import { sendTitles } from "./tableMaker";
+import { makeTable } from "./tableMaker";
 
-<pre>// Other code you might have, such as actually connecting to your database</pre>
+// Other code you might have, such as actually connecting to your database
 
-<pre>var query: string = "(YOUR MYSQL QUERY GOES HERE)";
+var query: string = "(YOUR MYSQL QUERY GOES HERE)";
 connection.query(query, function(err, res) {
     if (err) throw err;
     sendTitles("Your", "User", "Facing", "Column", "Headers", "Here");
     makeTable(res);
-}</pre>
+}
+```
 
 In the above example, there are six arguments passed to `sendTitles()`.  Therefore, the MySQL response object should contain six keys.
 

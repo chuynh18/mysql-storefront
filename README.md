@@ -16,6 +16,12 @@ First, ensure you have a MySQL instance set up and running locally.  __If your d
 
 The `sql` files that generate the appropriate tables can be found in `./sql`.
 
-`bamazon_products_schema.sql` and `bamazon_products_seed.sql` are collectively responsible for generating the table used by `bamazonCustomer` and `bamazonManager`.
+`bamazon_products_schema.sql` and `bamazon_products_seed.sql` are collectively responsible for generating the `products` table.  On the other hand, `bamazon_departments_schema.sql` and `bamazon_departments_seed.sql` generate the `departments` table.
+
+`bamazonCustomer` uses only the `products` table.  `bamazonManager` relies primarily on the `products` table, but does reference the `departments` table to ensure that managers do not add products to departments that don't exist.  `bamazonSupervisor` relies heavily on both tables to provides its functionality.
 
 Please be sure to use these `sql` files to create the relevant tables before running the corresponding programs.
+
+bamazonCustomer
+---------------
+
