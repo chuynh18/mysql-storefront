@@ -101,11 +101,27 @@ var confirmCreation = function(dept: string, overhead: number): void {
     ])
     .then(response => {
         if (response.confirm) {
-            var query: string = `INSERT INTO departments (department_name, over_head_costs) VALUES ('${dept}', '${overhead}')`;
-            connection.query(query, function(err, res) {
+            connection.query(`SELECT department_name FROM bamazon.departments`, function(err, res) {
                 if (err) throw err;
-                console.log("Department added.");
-                displayTable(`SELECT * FROM bamazon.departments WHERE department_name = '${dept}'`, false, ["DEPARTMENT ID", "DEPARTMENT NAME", "OVERHEAD COSTS"]);
+                var dupe = false;
+                res.forEach(element => {
+                    if (element.department_name === dept) {
+                        dupe = true;
+                        console.log(`Sorry, the ${dept} department already exists.  Please try again.`);
+
+                    }
+                })
+                if (!dupe) {
+                    var query: string = `INSERT INTO departments (department_name, over_head_costs) VALUES ('${dept}', '${overhead}')`;
+                    connection.query(query, function(err, res) {
+                        if (err) throw err;
+                        console.log("Department added.");
+                        displayTable(`SELECT * FROM bamazon.departments WHERE department_name = '${dept}'`, false, ["DEPARTMENT ID", "DEPARTMENT NAME", "OVERHEAD COSTS"]);
+                    })
+                }
+                else {
+                    addDepartment();
+                }
             })
         }
         else {
