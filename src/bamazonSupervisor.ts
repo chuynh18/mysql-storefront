@@ -26,7 +26,7 @@ var pushToChoices = function(id: number, name: string): void {
 }
 
 // draws the product table
-var displayTable = function(query: string, buildMenu?: boolean): void {
+var displayTable = function(query: string, buildMenu?: boolean, titles?: string[]): void {
     connection.query(query, function(err, res) {
         if (err) throw err;
 
@@ -38,13 +38,80 @@ var displayTable = function(query: string, buildMenu?: boolean): void {
                 pushToChoices(res[i].item_id, res[i].product_name);
             }
         }
-
         // this draws the tables by using my own table-generating code (contained in tableMaker.ts)
         // make sure the number and order of the user-facing titles matches the MySQL query
-        sendTitles(["DEPARTMENT ID", "DEPARTMENT", "OVERHEAD COSTS", "PRODUCT SALES", "DEPARTMENT REVENUE"]);
+        if (titles) {
+            sendTitles(titles);
+        }
+        else {
+            sendTitles(["DEPARTMENT ID", "DEPARTMENT", "OVERHEAD COSTS", "PRODUCT SALES", "DEPARTMENT REVENUE"]);
+        }
         // send the MySQL query response object to tableMaker.  It handles the rest and will console.log out the table
-        console.log(res);
         makeTable(res);
+        setTimeout(mainMenu,200);
+    })
+}
+
+var addDepartment = function(): void {
+    function notNull(input: string): string | boolean {
+        if (!input || input === "") {
+            return "Sorry, this cannot be blank.  Please enter something";
+        }
+        else {return true;}
+    }
+    function checkForNum(qty: any): boolean | string {
+        if (qty === "cancel" || qty === "quit") {
+            return true;
+        }
+        else if (/^[0-9]/.test(qty)) {
+            return true;
+        }
+        else {return "Please enter a number."}
+    }
+
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            message: "Enter the new department's name.",
+            name: "department",
+            validate: notNull
+        },
+        {
+            type: "input",
+            message: "Enter the department's overhead costs.",
+            name: "overhead",
+            validate: checkForNum
+        }
+    ])
+    .then(response => {
+        confirmCreation(response.department, parseFloat(response.overhead));
+    })
+}
+
+var confirmCreation = function(dept: string, overhead: number): void {
+    inquirer
+    .prompt([
+        {
+            type: "confirm",
+            message: `The ${dept} department will be created with overhead costs of ${overhead}.  Please confirm.`,
+            name: "confirm",
+            default: true
+        }
+    ])
+    .then(response => {
+        if (response.confirm) {
+            var query: string = `INSERT INTO departments (department_name, over_head_costs) VALUES ('${dept}', '${overhead}')`;
+            connection.query(query, function(err, res) {
+                if (err) throw err;
+                console.log("Department added.");
+                displayTable(`SELECT * FROM bamazon.departments WHERE department_name = '${dept}'`, false, ["DEPARTMENT ID", "DEPARTMENT NAME", "OVERHEAD COSTS"]);
+            })
+        }
+        else {
+            console.log("Department creation canceled.");
+            mainMenu();
+        }
     })
 }
 
@@ -61,13 +128,11 @@ var mainMenu = function(): void {
     .then((response) => {
         switch (response.manage) {
             case "View Product Sales by Department":
-            displayTable("SELECT d.department_id,	p.department_name, d.over_head_costs, SUM(p.product_sales) AS 'product_sales', (SUM(p.product_sales) - d.over_head_costs) AS 'department_revenue' FROM products p INNER JOIN departments d ON p.department_name = d.department_name GROUP BY d.department_id");
-            setTimeout(mainMenu,100);
+            displayTable("SELECT d.department_id, d.department_name, d.over_head_costs, SUM(IFNULL(p.product_sales, 0)) AS 'product_sales', (SUM(IFNULL(p.product_sales, 0)) - d.over_head_costs) AS 'department_revenue' FROM products p RIGHT JOIN departments d ON p.department_name = d.department_name GROUP BY d.department_id");
             break;
 
             case "Create New Department":
-            // code here
-            setTimeout(mainMenu,100);
+            addDepartment();
             break;
 
             case "Quit":
