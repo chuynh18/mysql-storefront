@@ -1,11 +1,11 @@
 // I guess this is how you require in TypeScript (as opposed to... var inquirer = require("inquirer"); ...etc.)
 import inquirer = require("inquirer");
-import { connection } from "./createDbConnection";
+import { connection } from "./createDbConnection"; // provides mysql npm package + connects to db
 import { connectToDB } from "./createDbConnection";
 import { disconnectFromDB } from "./createDbConnection";
-import { sendTitles } from "./tableMaker";
+import { sendTitles } from "./tableMaker"; // creates tables
 import { makeTable } from "./tableMaker";
-import { printLogo } from "./bamazonLogo";
+import { printLogo } from "./bamazonLogo"; // prints bamazon logo
 
 // this is used to build out the main menu
 class Choices {
@@ -51,6 +51,7 @@ var displayTableAndStart = function(): void {
     })
 }
 
+// first menu the user sees
 var mainMenu = function(): void {
     inquirer
     .prompt([
@@ -83,6 +84,7 @@ var mainMenu = function(): void {
     })
 }
 
+// once user selects an item to purchase, ask them how many they would like to buy
 var quantityMenu = function(item: string, itemId: number): void {
     function checkForNum(qty: any): boolean | string {
         if (parseInt(qty) === 0) {
@@ -138,6 +140,7 @@ var quantityMenu = function(item: string, itemId: number): void {
     })
 };
 
+// give them the chance to cancel their purchase
 var purchaseConfirmation = function(item: string, itemId: number, qty: number, inStock: number): void {
     var query: string = "SELECT price FROM products WHERE ?";
     var total: string;
@@ -169,6 +172,7 @@ var purchaseConfirmation = function(item: string, itemId: number, qty: number, i
     })
 }
 
+// update the database if the user chooses to make the purchase
 var updateDB = function(itemId: number, qty: number, inStock: number, total: number): void {
     connection.query(`UPDATE products SET product_sales = product_sales+${total} WHERE ?`, 
     {item_id: itemId},
@@ -184,6 +188,7 @@ var updateDB = function(itemId: number, qty: number, inStock: number, total: num
     })
 }
 
+// offer the user the chance to continue buying stuff
 var continueShopping = function(): void {
     inquirer
     .prompt([
@@ -204,6 +209,6 @@ var continueShopping = function(): void {
         }
     })
 }
-// ------------------------------------------------------------------------------
+// ---------------------------- function calls ----------------------------
 connectToDB();
 displayTableAndStart();

@@ -1,10 +1,11 @@
+// import dependencies
 import inquirer = require("inquirer");
-import { connection } from "./createDbConnection";
+import { connection } from "./createDbConnection"; // provides mysql npm package + connects to db
 import { connectToDB } from "./createDbConnection";
 import { disconnectFromDB } from "./createDbConnection";
-import { sendTitles } from "./tableMaker";
+import { sendTitles } from "./tableMaker"; // creates tables
 import { makeTable } from "./tableMaker";
-import { printLogo } from "./bamazonLogo";
+import { printLogo } from "./bamazonLogo"; // prints bamazon logo
 
 // draws the product table
 var displayTable = function(query: string): void {
@@ -13,7 +14,7 @@ var displayTable = function(query: string): void {
 
         // this draws the tables by using my own table-generating code (contained in tableMaker.ts)
         // make sure the number and order of the user-facing titles matches the MySQL query
-        sendTitles(["DEPARTMENT ID", "DEPARTMENT", "OVERHEAD COSTS", "PRODUCT SALES", "DEPARTMENT REVENUE"]);
+        sendTitles(["DEPARTMENT ID", "DEPARTMENT", "OVERHEAD COSTS", "PRODUCT SALES", "REVENUE MINUS OVERHEAD"]);
         // send the MySQL query response object to tableMaker.  It handles the rest and will console.log out the table
         makeTable(res);
         setTimeout(mainMenu,200);
@@ -75,8 +76,6 @@ var confirmCreation = function(dept: string, overhead: number): void {
                 res.forEach(element => {
                     if (element.department_name.toLowerCase() === dept.toLowerCase()) {
                         dupe = true;
-                        console.log(`Sorry, the ${dept} department already exists.  Please try again.`);
-
                     }
                 })
                 if (!dupe) {
@@ -88,6 +87,7 @@ var confirmCreation = function(dept: string, overhead: number): void {
                     })
                 }
                 else {
+                    console.log(`Sorry, the ${dept} department already exists.  Please try again.`);
                     addDepartment();
                 }
             })
@@ -125,6 +125,6 @@ var mainMenu = function(): void {
         }
     })
 }
-// ------------------------------------------------------------------------------
+// ---------------------------- function calls ----------------------------
 printLogo();
 setTimeout(mainMenu, 420);

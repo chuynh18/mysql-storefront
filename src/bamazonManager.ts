@@ -1,11 +1,10 @@
-// I guess this is how you require in TypeScript (as opposed to... var inquirer = require("inquirer"); ...etc.)
 import inquirer = require("inquirer");
-import { connection } from "./createDbConnection";
+import { connection } from "./createDbConnection"; // provides mysql npm package + connects to db
 import { connectToDB } from "./createDbConnection";
 import { disconnectFromDB } from "./createDbConnection";
-import { sendTitles } from "./tableMaker";
+import { sendTitles } from "./tableMaker"; // creates tables
 import { makeTable } from "./tableMaker";
-import { printLogo } from "./bamazonLogo";
+import { printLogo } from "./bamazonLogo"; // prints bamazon logo
 
 // this is used to build out the main menu
 class Choices {
@@ -228,6 +227,6 @@ var mainMenu = function(): void {
         }
     })
 }
-// ------------------------------------------------------------------------------
+// ---------------------------- function calls ----------------------------
 printLogo();
 setTimeout(mainMenu, 420);

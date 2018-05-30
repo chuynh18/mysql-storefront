@@ -16,15 +16,19 @@ var tableTitles: string[];
 var horizontalSeparator: string;
 
 // called by user-facing programs; sends table coming from MySQL to tableMaker and kicks off necessary processing
-export var makeTable = function(tableResponse: object[]): void {
+export var makeTable = function(tableResponse: object[], hasPrice?: boolean | undefined): void {
     var header: string;
     var separator: string;
     table = tableResponse;
-
+    if (hasPrice === undefined) {
+        hasPrice = true; // default to true so that we fail safe
+    }
     // Perform the operations so that we can print out the table
     getObjectKeys();
     convertTableKeys();
-    priceToFixed2();
+    if (hasPrice) {
+        priceToFixed2();
+    }
     updateMetadataWithTitles();
     metadataLongestLength();
     padTitle();
@@ -85,11 +89,20 @@ var updateMetadataWithTitles = function(): void {
     }
 }
 
-// lol hacky and with implications for bamazonSupervisor (unnecessary operations).  sadface
+// won't get executed if you pass hasPrice = false to makeTable()
 var priceToFixed2 = function(): void {
     table.forEach(element => {
         if (element.price) {
             element.price = element.price.toFixed(2);
+        }
+        if (element.over_head_costs) {
+            element.over_head_costs = element.over_head_costs.toFixed(2);
+        }
+        if (element.product_sales) {
+            element.product_sales = element.product_sales.toFixed(2);
+        }
+        if (element.department_revenue) {
+            element.department_revenue = element.department_revenue.toFixed(2);
         }
     })
 }
