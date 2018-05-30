@@ -85,9 +85,12 @@ var updateMetadataWithTitles = function(): void {
     }
 }
 
+// lol hacky and with implications for bamazonSupervisor (unnecessary operations).  sadface
 var priceToFixed2 = function(): void {
     table.forEach(element => {
-        element.price = element.price.toFixed(2);
+        if (element.price) {
+            element.price = element.price.toFixed(2);
+        }
     })
 }
 

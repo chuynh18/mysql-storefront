@@ -26,7 +26,7 @@ var pushToChoices = function(id: number, name: string): void {
     choices.push(new Choices(id, name));
 }
 
-// draws the product table and then displays the main menu
+// draws the product table
 var displayTable = function(query: string, buildMenu?: boolean): void {
     connection.query(query, function(err, res) {
         if (err) throw err;
@@ -148,7 +148,8 @@ var addProduct = function(): void {
         {
             type: "input",
             message: "Enter product's department.",
-            name: "department"
+            name: "department",
+            validate: notNull
         },
         {
             type: "input",
@@ -229,4 +230,4 @@ var mainMenu = function(): void {
 }
 // ------------------------------------------------------------------------------
 printLogo();
-setTimeout(mainMenu, 1000);
+setTimeout(mainMenu, 420);

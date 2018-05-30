@@ -159,7 +159,7 @@ var purchaseConfirmation = function(item: string, itemId: number, qty: number, i
         ])
         .then((answer) => {
             if (answer.confirm) {
-                updateDB(itemId, qty, inStock);
+                updateDB(itemId, qty, inStock, parseFloat(total));
             }
             else {
                 console.log("Not a problem!  Your purchase has been canceled.");
@@ -169,15 +169,19 @@ var purchaseConfirmation = function(item: string, itemId: number, qty: number, i
     })
 }
 
-var updateDB = function(itemId: number, qty: number, inStock: number): void {
-    var newValue: number = inStock - qty;
-    var query: string = `UPDATE products SET stock_quantity = ${newValue} WHERE ?`;
-    connection.query(query, 
+var updateDB = function(itemId: number, qty: number, inStock: number, total: number): void {
+    connection.query(`UPDATE products SET product_sales = product_sales+${total} WHERE ?`, 
+    {item_id: itemId},
+    function(err, res) {
+        var newValue: number = inStock - qty;
+        var query: string = `UPDATE products SET stock_quantity = ${newValue} WHERE ?`;
+        connection.query(query, 
         {item_id: itemId},
         function(err, res) {
             console.log("Your purchase was made successfully!  Thank you for shopping with us.");
             continueShopping();
         })
+    })
 }
 
 var continueShopping = function(): void {
