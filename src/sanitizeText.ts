@@ -1,6 +1,6 @@
 // this escapes the various types of quotes
 
-var replacementTable = ["'", '"', "`"];
+var replacementTable = ["'", '"', "`", ":", ";", "[", "]", "{", "}"];
 
 export var sanitize = function(input: string): string {
     var sanitized = input;

@@ -82,10 +82,11 @@ var confirmCreation = function(dept: string, overhead: number): void {
                 if (!dupe) {
                     var department = sanitize(dept);
                     var query: string = `INSERT INTO departments (department_name, over_head_costs) VALUES ('${department}', '${overhead}')`;
+                    console.log(query);
                     connection.query(query, function(err, res) {
                         if (err) throw err;
                         console.log("Department added.");
-                        displayTable(`SELECT d.department_id, d.department_name, d.over_head_costs, SUM(IFNULL(p.product_sales, 0)) AS 'product_sales', (SUM(IFNULL(p.product_sales, 0)) - d.over_head_costs) AS 'department_revenue' FROM products p RIGHT JOIN departments d ON p.department_name = d.department_name WHERE d.department_name = '${dept}'`);
+                        displayTable(`SELECT d.department_id, d.department_name, d.over_head_costs, SUM(IFNULL(p.product_sales, 0)) AS 'product_sales', (SUM(IFNULL(p.product_sales, 0)) - d.over_head_costs) AS 'department_revenue' FROM products p RIGHT JOIN departments d ON p.department_name = d.department_name WHERE d.department_name = '${department}'`);
                     })
                 }
                 else {
