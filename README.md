@@ -1,6 +1,10 @@
 MySQL mock storefront
 =====================
 
+YouTube video
+-------------
+Please see the [YouTube video here](https://youtu.be/i7L5uL5V0B8) for an overview of the project.
+
 Compilation (Optional)
 ----------------------
 For your convenience, __compiling the TypeScript source (located in `./src`) is not necessary__.  You'll find the compiled JavaScript in `./lib`.  However, if you wish to compile from source, please ensure that you have TypeScript installed.  TypeScript can be installed globally by running `npm install -g typescript`.  Otherwise, you can install it locally.  First, make sure your current working directory is the root directory of this project.  Then simply run `npm install --save-dev typescript`.  This will install TypeScript as a dependency of this project and update `package.json` accordingly.
