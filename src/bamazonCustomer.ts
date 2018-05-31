@@ -29,7 +29,6 @@ var pushToChoices = function(id: number, name: string): void {
 // draws the product table and then displays the main menu
 var displayTableAndStart = function(): void {
     var query: string = "SELECT item_id, product_name, price, stock_quantity FROM products";
-    printLogo();
     
     connection.query(query, function(err, res) {
         if (err) throw err;
@@ -211,4 +210,5 @@ var continueShopping = function(): void {
 }
 // ---------------------------- function calls ----------------------------
 connectToDB();
-displayTableAndStart();
+printLogo();
+setTimeout(displayTableAndStart, 420);

@@ -5,6 +5,7 @@ import { connectToDB } from "./createDbConnection";
 import { disconnectFromDB } from "./createDbConnection";
 import { sendTitles } from "./tableMaker"; // creates tables
 import { makeTable } from "./tableMaker";
+import { sanitize } from "./sanitizeText"; // makes it so I can use ', ", ` in items
 import { printLogo } from "./bamazonLogo"; // prints bamazon logo
 
 // draws the product table
@@ -79,7 +80,8 @@ var confirmCreation = function(dept: string, overhead: number): void {
                     }
                 })
                 if (!dupe) {
-                    var query: string = `INSERT INTO departments (department_name, over_head_costs) VALUES ('${dept}', '${overhead}')`;
+                    var department = sanitize(dept);
+                    var query: string = `INSERT INTO departments (department_name, over_head_costs) VALUES ('${department}', '${overhead}')`;
                     connection.query(query, function(err, res) {
                         if (err) throw err;
                         console.log("Department added.");

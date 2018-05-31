@@ -4,6 +4,7 @@ import { connectToDB } from "./createDbConnection";
 import { disconnectFromDB } from "./createDbConnection";
 import { sendTitles } from "./tableMaker"; // creates tables
 import { makeTable } from "./tableMaker";
+import { sanitize } from "./sanitizeText"; // makes it so I can use ', ", ` in items
 import { printLogo } from "./bamazonLogo"; // prints bamazon logo
 
 // this is used to build out the main menu
@@ -179,15 +180,15 @@ var addProduct = function(): void {
             }
         ])
         .then(response => {
-            var name = response.name;
-            var department = response.department;
-            var maker = response.maker;
-            var description = response.description;
+            var name = sanitize(response.name);
+            var department = sanitize(response.department);
+            var maker = sanitize(response.maker);
+            var description = sanitize(response.description);
             var price = parseFloat(response.price).toFixed(2);
             var quantity = parseInt(response.quantity);
 
-            connection.query(`INSERT INTO products (product_name, department_name, maker, product_description, price, stock_quantity) VALUES ('${name}', '${department}', '${maker}', '${description}', ${price}, ${quantity})`,
-            function(err, res) {
+            var query = `INSERT INTO products (product_name, department_name, maker, product_description, price, stock_quantity) VALUES ('${name}', '${department}', '${maker}', '${description}', ${price}, ${quantity})`;
+            connection.query(query, function(err, res) {
                 console.log("Product inserted:");
                 displayTable(`SELECT item_id, department_name, product_name, maker, price, stock_quantity FROM products WHERE product_name = '${name}'`);
                 setTimeout(mainMenu,100);
