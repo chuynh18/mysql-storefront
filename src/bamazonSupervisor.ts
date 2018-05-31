@@ -82,7 +82,6 @@ var confirmCreation = function(dept: string, overhead: number): void {
                 if (!dupe) {
                     var department = sanitize(dept);
                     var query: string = `INSERT INTO departments (department_name, over_head_costs) VALUES ('${department}', '${overhead}')`;
-                    console.log(query);
                     connection.query(query, function(err, res) {
                         if (err) throw err;
                         console.log("Department added.");
